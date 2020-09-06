@@ -51,6 +51,9 @@ func main() {
 	username := flag.String("username", "dhook", "The username to send the message as")
 	flag.StringVar(username, "user", *username, "alias for -username")
 
+	avatarURL := flag.String("avatar-url", "", "The URL of the avatar to use")
+	flag.StringVar(avatarURL, "avatar", *avatarURL, "alias for -avatar-url")
+
 	webhookURLFlag := flag.String("webhook-url", webhookURL, "The webhook URL to send the message to")
 	flag.StringVar(webhookURLFlag, "url", *webhookURLFlag, "alias for -webhook-url")
 
@@ -94,8 +97,9 @@ func main() {
 	}
 
 	webhookPayload := discordgo.WebhookParams{
-		Content:  *message,
-		Username: *username,
+		Content:   *message,
+		Username:  *username,
+		AvatarURL: *avatarURL,
 		Embeds: []*discordgo.MessageEmbed{
 			{
 				URL:         *embedURL,

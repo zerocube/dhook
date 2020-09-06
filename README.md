@@ -13,6 +13,7 @@
 |-message|-msg|Required: The message content to send.|
 |-webhook-url|-url|Required [1]: The webhook URL to send the message to.|
 |-username|-user|The username to send the webhook as.|
+|-avatar-url|-avatar|URL of an image to use as the avatar.|
 |-embed-url||The URL for the embed title.|
 |-embed-title|-title|The title of the embed.|
 |-embed-description|-description|The description text in the embed object.|
