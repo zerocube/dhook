@@ -14,5 +14,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Build the Docker image (but don't do anything with it)
-      run: docker build . --file Dockerfile --tag zerocube-dhook:$(date +%s)
+    - name: Build and push to GitHub Packages
+      uses: docker/build-push-action@v1
+      with:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        registry: docker.pkg.github.com
+        repository: zerocube/dhook
+        tags: ${{ github.branch_name }}
