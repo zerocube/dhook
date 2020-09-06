@@ -11,7 +11,8 @@ COPY . ./
 
 ENV CGO_ENABLED=0
 ARG WEBHOOK_URL
-RUN go build -ldflags "-X main.webhookURL=${WEBHOOK_URL}" -o /dhook -v .
+
+RUN go test -v ./... && go build -ldflags "-X main.webhookURL=${WEBHOOK_URL}" -o /dhook -v .
 
 ENTRYPOINT ["go", "run", "."]
 
