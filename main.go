@@ -4,6 +4,7 @@ import (
 	"flag"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -15,19 +16,28 @@ var webhookURL string
 const webhookURLEnvKey = "DHOOK_URL"
 
 func init() {
+
+	debug = strings.ToLower(os.Getenv("DEBUG")) == "true"
+	verbose = strings.ToLower(os.Getenv("VERBOSE")) == "true"
+
 	if verbose {
 		log.Println("Verbose mode enabled.")
 	}
 	if debug {
 		log.Println("Debug mode enabled.")
 	}
-	if webhookURL != "" {
+
+	if webhookURL == "" {
 		if debug {
 			log.Println("webhookURL package variable empty")
 		}
 		webhookURL = os.Getenv(webhookURLEnvKey)
 		if debug && webhookURL == "" {
 			log.Println(webhookURLEnvKey, "environment variable not set.")
+		}
+	} else {
+		if debug {
+			log.Println("webhookURL set via package variable:", webhookURL)
 		}
 	}
 }
