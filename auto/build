@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+set -eu
+
+GOOS="${GOOS:-linux}"
+GOARCH="${GOARCH:-amd64}"
+GITHUB_REF="${GITHUB_REF:-""}"
+
+function buildCommand() {
+  OUTPUT_PATH="build/dhook_${GOOS}_${GOARCH}"
+  echo "Building: ${OUTPUT_PATH}"
+  go build -v \
+  -ldflags \
+  "-X 'main.version=${GITHUB_REF##*/}'" \
+  -o "${OUTPUT_PATH}" \
+  "${@}"
+}
+
+# Note to self: A full list can be found by running 'go tool dist list'.
+
+rm -v build/roo_* 2> /dev/null || true
+
+GOOS=linux    GOARCH=amd64  buildCommand "${@}"
+GOOS=darwin   GOARCH=amd64  buildCommand "${@}"
+GOOS=windows  GOARCH=amd64  buildCommand "${@}"
+
+chmod 755 build/dhook_*

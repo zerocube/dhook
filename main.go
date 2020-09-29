@@ -2,48 +2,21 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"os"
-	"strings"
 
 	"github.com/bwmarrin/discordgo"
 )
 
-var debug bool
-var verbose bool
 var webhookURL string
+var version string
 
 const webhookURLEnvKey = "DHOOK_URL"
 
-func init() {
-
-	debug = strings.ToLower(os.Getenv("DEBUG")) == "true"
-	verbose = strings.ToLower(os.Getenv("VERBOSE")) == "true"
-
-	if verbose {
-		log.Println("Verbose mode enabled.")
-	}
-	if debug {
-		log.Println("Debug mode enabled.")
-	}
-
-	if webhookURL == "" {
-		if debug {
-			log.Println("webhookURL package variable empty")
-		}
-		webhookURL = os.Getenv(webhookURLEnvKey)
-		if debug && webhookURL == "" {
-			log.Println(webhookURLEnvKey, "environment variable not set.")
-		}
-	} else {
-		if debug {
-			log.Println("webhookURL set via package variable:", webhookURL)
-		}
-	}
-}
+var debug, verbose bool
 
 func main() {
-
 	// Flags for the main payload - Message and username
 	message := flag.String("message", "", "The message to send")
 	flag.StringVar(message, "msg", *message, "alias for -message")
@@ -72,8 +45,37 @@ func main() {
 	embedFooterIcon := flag.String("embed-footer-icon", "", "The URL for the footer icon")
 	flag.StringVar(embedFooterIcon, "footer-icon", *embedFooterIcon, "alias for -embed-footer-icon")
 
+	showVersion := flag.Bool("version", false, "Shows version information and exits")
+	debugFlag := flag.Bool("debug", false, "Enables debug logging")
+	verboseFlag := flag.Bool("verbose", false, "Enables verbose logging")
+
 	// Work the flag magic
 	flag.Parse()
+
+	debug, verbose = *debugFlag, *verboseFlag
+
+	if webhookURL == "" {
+		if debug {
+			log.Println("webhookURL package variable empty")
+		}
+		webhookURL = os.Getenv(webhookURLEnvKey)
+		if debug && webhookURL == "" {
+			log.Println(webhookURLEnvKey, "environment variable not set.")
+		}
+	} else {
+		if debug {
+			log.Println("webhookURL set via package variable:", webhookURL)
+		}
+	}
+
+	if *showVersion {
+		if version == "" {
+			fmt.Println("dhook version unknown - Non-GitHub build.")
+		} else {
+			fmt.Println("dhook version", version)
+		}
+		os.Exit(0)
+	}
 
 	// The command-line parameter for the webhook URL takes precedence over the package / environment variable
 	// First check if it's provided in some form.
