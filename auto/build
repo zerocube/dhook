@@ -18,7 +18,7 @@ function buildCommand() {
 
 # Note to self: A full list can be found by running 'go tool dist list'.
 
-rm -v build/roo_* 2> /dev/null || true
+rm -v build/dhook_* 2> /dev/null || true
 
 GOOS=linux    GOARCH=amd64  buildCommand "${@}"
 GOOS=darwin   GOARCH=amd64  buildCommand "${@}"
