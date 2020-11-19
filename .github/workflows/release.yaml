@@ -1,0 +1,105 @@
+# Creates a GitHub release
+on:
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
+name: Create Release
+
+jobs:
+  build:
+    name: Build the Artefacts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go 1.x
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.15
+        id: go
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Build project
+        run: auto/build
+      - name: Upload build artefacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: binaries
+          path: build/dhook_*
+  determine_version:
+    name: Get Version Number
+    runs-on: ubuntu-latest
+    outputs:
+      version_number: ${{ steps.get_version.outputs.version }}
+    steps:
+      - name: Set up Go 1.x
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.15
+        id: go
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+      - id: get_version
+        name: Get version from command line
+        run: |
+          APP_VERSION="$(go run . --version)"
+          echo ::set-output name=version::${APP_VERSION}
+          echo "APP_VERSION: ${APP_VERSION}"
+  create_release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs:
+      - determine_version
+      - build
+    steps:
+      - name: Download compiled binaries
+        uses: actions/download-artifact@v2
+        with:
+          name: binaries
+          path: build/
+
+      - name: Create release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: build/dhook_*
+  build_push_docker:
+    name: Builds and pushes the Docker image
+    runs-on: ubuntu-latest
+    needs: []
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.ZEROCUBE_PACKAGES_TOKEN }}
+    # GitHub Packages is deprecated, but we still have a widget on the homepage so we'll keep it.
+    - name: Login to GitHub Packages (legacy)
+      uses: docker/login-action@v1
+      with:
+        registry: docker.pkg.github.com
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build and push to GitHub Container Registry
+      uses: docker/build-push-action@v2
+      with:
+        tags: latest,${{ github.GITHUB_SHA }}
+    - name: Build and push to GitHub Packages (legacy)
+      uses: docker/build-push-action@v2
+      with:
+        push: true
+        tags: |
+          docker.pkg.github.com/${{github.repository}}:${{needs.determine_version.outputs.version_number}}
+          ghcr.io/${{github.repository}}:${{needs.determine_version.outputs.version_number}}
