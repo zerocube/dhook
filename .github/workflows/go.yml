@@ -26,7 +26,7 @@ jobs:
 
     - name: Test
       run: |
-        build/dhook -version
+        build/dhook_linux_amd64 -version
         go test -v .
 
     - name: Upload build artefacts
