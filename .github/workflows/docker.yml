@@ -3,6 +3,8 @@
 # Creates a GitHub release
 on:
   push:
+    branches:
+      - '*'
     tags-ignore: # Ensure that we're not running this on our release tags - This will be an actual build.
       - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
