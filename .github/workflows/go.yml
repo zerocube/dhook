@@ -7,6 +7,36 @@ on:
 
 jobs:
 
+  determine_version:
+    name: Get Version Number
+    runs-on: ubuntu-latest
+    outputs:
+      version_number: ${{ steps.get_version.outputs.version }}
+      matching_tag: ${{ steps.get_matching_tag.outputs.tag }}
+    steps:
+    - name: Set up Go 1.x
+      uses: actions/setup-go@v2
+      with:
+        go-version: ^1.15
+      id: go
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+    - id: get_version
+      name: Get version from command line
+      run: |
+        APP_VERSION="$(go run . --version)"
+        echo ::set-output name=version::${APP_VERSION}
+        echo "APP_VERSION: ${APP_VERSION}"
+    - id: get_matching_tag
+      name: Check if existing tag exists
+      run: |
+        git fetch --tags
+        APP_VERSION="${{ steps.get_version.outputs.version }}"
+        echo "APP_VERSION: ${APP_VERSION}"
+        MATCHING_TAG="$(git tag --list | grep '^${APP_VERSION}$')"
+        echo ::set-output name=tag::${MATCHING_TAG}
+        echo "MATCHING_TAG: ${MATCHING_TAG}"
+
   build_go:
     name: Build
     runs-on: ubuntu-latest
