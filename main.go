@@ -72,7 +72,7 @@ func main() {
 		if version == "" {
 			fmt.Println("dhook version unknown - Non-GitHub build.")
 		} else {
-			fmt.Println("dhook version", version)
+			fmt.Println(version)
 		}
 		os.Exit(0)
 	}

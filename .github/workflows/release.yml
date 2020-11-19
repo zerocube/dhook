@@ -26,10 +26,31 @@ jobs:
         with:
           name: binaries
           path: build/dhook_*
+  determine_version:
+    name: Get Version Number
+    runs-on: ubuntu-latest
+    outputs:
+      version_number: ${{ steps.get_version.outputs.version }}
+    steps:
+      - name: Set up Go 1.x
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.15
+        id: go
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+      - id: get_version
+        name: Get version from command line
+        run: |
+          APP_VERSION="$(go run . --version)"
+          echo ::set-output name=version::${APP_VERSION}
+          echo "APP_VERSION: ${APP_VERSION}"
   create_release:
     name: Create GitHub Release
     runs-on: ubuntu-latest
-    needs: build
+    needs:
+      - determine_version
+      - build
     steps:
       - name: Download compiled binaries
         uses: actions/download-artifact@v2
@@ -78,6 +99,7 @@ jobs:
     - name: Build and push to GitHub Packages (legacy)
       uses: docker/build-push-action@v2
       with:
+        push: true
         tags: |
-          docker.pkg.github.com/zerocube/dhook:${{ github.GITHUB_REF }}
-          ghcr.io/zerocube/dhook:${{ github.GITHUB_REF }}
+          docker.pkg.github.com/${{github.repository}}:${{needs.determine_version.outputs.version_number}}
+          ghcr.io/${{github.repository}}:${{needs.determine_version.outputs.version_number}}
