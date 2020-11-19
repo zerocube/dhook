@@ -8,10 +8,9 @@ on:
 
 jobs:
 
-  build_docker:
-
+  github_container_registry:
+    name: "Build and push to GitHub Container Registry"
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
 
@@ -26,8 +25,21 @@ jobs:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
         password: ${{ secrets.ZEROCUBE_PACKAGES_TOKEN }}
+    # GitHub Packages is deprecated, but we still have a widget on the homepage so we'll keep it.
+    - name: Login to GitHub Packages (legacy)
+      uses: docker/login-action@v1
+      with:
+        registry: docker.pkg.github.com
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Build and push to GitHub Packages
+    - name: Build and push to GitHub Container Registry
       uses: docker/build-push-action@v2
       with:
         tags: latest,${{ github.GITHUB_SHA }}
+    - name: Build and push to GitHub Packages (legacy)
+      uses: docker/build-push-action@v2
+      with:
+        tags: |
+          docker.pkg.github.com/zerocube/dhook:${{ github.GITHUB_SHA }}
+          ghcr.io/zerocube/dhook:${{ github.GITHUB_SHA }}
