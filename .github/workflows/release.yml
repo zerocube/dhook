@@ -45,3 +45,39 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: build/dhook_*
+  build_push_docker:
+    name: Builds and pushes the Docker image
+    runs-on: ubuntu-latest
+    needs: []
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.ZEROCUBE_PACKAGES_TOKEN }}
+    # GitHub Packages is deprecated, but we still have a widget on the homepage so we'll keep it.
+    - name: Login to GitHub Packages (legacy)
+      uses: docker/login-action@v1
+      with:
+        registry: docker.pkg.github.com
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build and push to GitHub Container Registry
+      uses: docker/build-push-action@v2
+      with:
+        tags: latest,${{ github.GITHUB_SHA }}
+    - name: Build and push to GitHub Packages (legacy)
+      uses: docker/build-push-action@v2
+      with:
+        tags: |
+          docker.pkg.github.com/zerocube/dhook:${{ github.GITHUB_REF }}
+          ghcr.io/zerocube/dhook:${{ github.GITHUB_REF }}
