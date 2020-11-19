@@ -4,6 +4,8 @@ on:
     branches:
       - main
 
+name: Create Tag
+
 jobs:
   determine_version:
     name: Get Version Number
