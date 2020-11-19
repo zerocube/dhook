@@ -33,7 +33,7 @@ jobs:
         git fetch --tags
         APP_VERSION="${{ steps.get_version.outputs.version }}"
         echo "APP_VERSION: ${APP_VERSION}"
-        MATCHING_TAG="$(git tag --list | grep '^${APP_VERSION}$')"
+        MATCHING_TAG="$(git tag --list | grep '^${APP_VERSION}$' || true)"
         echo ::set-output name=tag::${MATCHING_TAG}
         echo "MATCHING_TAG: ${MATCHING_TAG}"
 
