@@ -14,6 +14,7 @@ jobs:
   determine_version:
     name: Get Version Number
     runs-on: ubuntu-latest
+    outputs:
       version_number: ${{ steps.get_version.outputs.version }}
     steps:
     - name: Set up Go 1.x
