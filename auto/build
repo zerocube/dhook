@@ -6,8 +6,10 @@ GOOS="${GOOS:-linux}"
 GOARCH="${GOARCH:-amd64}"
 GITHUB_REF="${GITHUB_REF:-""}"
 
+SCRIPT_NAME="dhook"
+
 function buildCommand() {
-  OUTPUT_PATH="build/dhook_${GOOS}_${GOARCH}"
+  OUTPUT_PATH="build/${SCRIPT_NAME}_${GOOS}_${GOARCH}"
   echo "Building: ${OUTPUT_PATH}"
   go build -v \
   -ldflags \
@@ -18,10 +20,15 @@ function buildCommand() {
 
 # Note to self: A full list can be found by running 'go tool dist list'.
 
-rm -v build/dhook_* 2> /dev/null || true
+rm -v build/${SCRIPT_NAME}* 2> /dev/null || true
+
+echo "Downloading dependencies"
+go mod download -x && go mod verify
 
 GOOS=linux    GOARCH=amd64  buildCommand "${@}"
+GOOS=linux    GOARCH=arm64  buildCommand "${@}"
+GOOS=linux    GOARCH=mips64 buildCommand "${@}"
 GOOS=darwin   GOARCH=amd64  buildCommand "${@}"
 GOOS=windows  GOARCH=amd64  buildCommand "${@}"
 
-chmod 755 build/dhook_*
+chmod 755 build/${SCRIPT_NAME}*

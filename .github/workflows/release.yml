@@ -15,7 +15,7 @@ jobs:
       - name: Set up Go 1.x
         uses: actions/setup-go@v2
         with:
-          go-version: ^1.14
+          go-version: ^1.15
         id: go
       - name: Checkout code
         uses: actions/checkout@v2
@@ -36,43 +36,12 @@ jobs:
         with:
           name: binaries
           path: build/
-      - name: Create Release
+
+      - name: Create release
         id: create_release
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: startsWith(github.ref, 'refs/tags/')
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
-      - name: Upload Linux amd64 binary
-        id: upload-release-asset-linux-amd64
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/dhook_linux_amd64
-          asset_name: dhook_linux_amd64
-          asset_content_type: application/octet-stream
-      - name: Upload Darwin amd64 binary
-        id: upload-release-asset-darwin-amd64
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/dhook_darwin_amd64
-          asset_name: dhook_darwin_amd64
-          asset_content_type: application/octet-stream
-      - name: Upload Windows amd64 binary
-        id: upload-release-asset-windows-amd64
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/dhook_windows_amd64
-          asset_name: dhook_windows_amd64
-          asset_content_type: application/octet-stream
+          files: build/dhook_*
