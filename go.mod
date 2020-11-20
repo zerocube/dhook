@@ -1,4 +1,4 @@
-module gitlab.com/zerocube/discord-webhook
+module github.com/zerocube/dhook
 
 go 1.15
 
