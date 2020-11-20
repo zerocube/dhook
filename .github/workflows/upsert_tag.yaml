@@ -2,7 +2,7 @@
 on:
   push:
     branches:
-      - main
+      - 'main'
 
 name: Create Tag
 
@@ -27,7 +27,7 @@ jobs:
         echo ::set-output name=version::${APP_VERSION}
         echo "APP_VERSION: ${APP_VERSION}"
     - id: get_matching_tag
-      name: Get matching tags
+      name: Get matching tag for version
       run: |
         git fetch --tags
         APP_VERSION="${{ steps.get_version.outputs.version }}"
@@ -38,8 +38,9 @@ jobs:
     - name: Push new tag
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      if: ${{ steps.get_matching_tag.outputs.matching_tag }} == ""
+      if: steps.get_matching_tag.outputs.matching_tag == ''
       run: |
+        echo "MATCHING_TAG: ${{ steps.get_matching_tag.outputs.matching_tag }}"
         APP_VERSION="${{ steps.get_version.outputs.version }}"
         git tag "v${APP_VERSION}"
         git push --tags
