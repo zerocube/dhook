@@ -107,5 +107,5 @@ jobs:
       with:
         push: true
         tags: |
-          docker.pkg.github.com/${{github.repository}}:${{ needs.get_metadata.outputs.version_number }}
+          docker.pkg.github.com/${{github.repository}}/dhook:${{ needs.get_metadata.outputs.version_number }}
           ghcr.io/${{github.repository}}:${{ needs.get_metadata.outputs.version_number }}
