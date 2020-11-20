@@ -8,38 +8,18 @@ on:
     tags-ignore: # Ensure that we're not running this on our release tags - This will be an actual build.
       - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
-name: Docker Build
+name: Docker
 
 jobs:
-  determine_version:
-    name: Get Version Number
-    runs-on: ubuntu-latest
-    outputs:
-      version_number: ${{ steps.get_version.outputs.version }}
-    steps:
-    - name: Set up Go 1.x
-      uses: actions/setup-go@v2
-      with:
-        go-version: ^1.15
-      id: go
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v2
-    - id: get_version
-      name: Get version from command line
-      run: |
-        APP_VERSION="$(go run . --version)"
-        echo ::set-output name=version::${APP_VERSION}
-        echo "APP_VERSION: ${APP_VERSION}"
 
   build_docker:
-    name: Local Build Test
-    runs-on: ubuntu-latest
+    name: Test Build
+    runs-on: ubuntu-20.04
     services:
       registry:
         image: registry:2
         ports:
           - 5000:5000
-    needs: determine_version
     steps:
     - uses: actions/checkout@v2
 
@@ -54,5 +34,4 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         push: true
-        # tags: localhost:5000/zerocube/dhook:${{github.sha}}
-        tags: localhost:5000/${{github.repository}}:${{needs.determine_version.outputs.version_number}}
+        tags: localhost:5000/${{github.repository}}:${{github.sha}}
