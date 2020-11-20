@@ -25,31 +25,30 @@ jobs:
         with:
           name: binaries
           path: build/dhook_*
-  determine_version:
-    name: Get Version Number
+  get_metadata:
+    name: Get information about the current version
     runs-on: ubuntu-latest
+    needs: []
     outputs:
-      version_number: ${{ steps.get_version.outputs.version }}
+      version_number: ${{ steps.get.outputs.version }}
+      matching_tag: ${{ steps.get.outputs.matching_tag }}
     steps:
-      - name: Set up Go 1.x
-        uses: actions/setup-go@v2
-        with:
-          go-version: ^1.15
-        id: go
-      - name: Check out code into the Go module directory
-        uses: actions/checkout@v2
-      - id: get_version
-        name: Get version from command line
-        run: |
-          APP_VERSION="$(go run . --version)"
-          echo ::set-output name=version::${APP_VERSION}
-          echo "APP_VERSION: ${APP_VERSION}"
+    - id: get
+      name: Get version from command line
+      run: |
+        APP_VERSION="$(go run . --version)"
+        echo ::set-output name=version::${APP_VERSION}
+        echo "APP_VERSION: ${APP_VERSION}"
+        MATCHING_TAG="$(git tag --list | grep "^v${APP_VERSION}$" || true)"
+        echo "MATCHING_TAG: ${MATCHING_TAG}"
+        echo ::set-output name=matching_tag::${MATCHING_TAG}
   create_release:
     name: Create GitHub Release
     runs-on: ubuntu-latest
     needs:
-      - determine_version
+      - get_metadata
       - build
+    if: needs.get_metadata.outputs.matching_tag == ""
     steps:
       - name: Download compiled binaries
         uses: actions/download-artifact@v2
