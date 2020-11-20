@@ -26,7 +26,7 @@ jobs:
           name: binaries
           path: build/dhook_*
   get_metadata:
-    name: Get information about the current version
+    name: Get app metadata
     runs-on: ubuntu-latest
     needs: []
     outputs:
@@ -72,7 +72,7 @@ jobs:
           tag_name: v${{ needs.get_metadata.outputs.version_number }}
           files: build/dhook_*
   build_push_docker:
-    name: Builds and pushes the Docker image
+    name: Build and push Docker images
     runs-on: ubuntu-latest
     needs:
       - get_metadata
