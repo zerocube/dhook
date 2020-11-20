@@ -3,8 +3,6 @@
 # Creates a GitHub release
 on:
   push:
-    branches:
-      - '*'
     branches-ignore:
       - main
     tags-ignore: # Ensure that we're not running this on our release tags - This will be an actual build.
