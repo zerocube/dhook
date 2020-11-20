@@ -46,6 +46,7 @@ jobs:
           APP_VERSION="$(go run . --version)"
           echo ::set-output name=version::${APP_VERSION}
           echo "APP_VERSION: ${APP_VERSION}"
+          git fetch --tags
           MATCHING_TAG="$(git tag --list | grep "^v${APP_VERSION}$" || true)"
           echo "MATCHING_TAG: ${MATCHING_TAG}"
           echo ::set-output name=matching_tag::${MATCHING_TAG}
