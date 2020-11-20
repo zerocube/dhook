@@ -7,8 +7,8 @@ on:
 name: Create Tag
 
 jobs:
-  determine_version:
-    name: Get Version Number
+  push_tag:
+    name: Push tag if it doesn't exist
     runs-on: ubuntu-latest
     outputs:
       version_number: ${{ steps.get_version.outputs.version }}
@@ -38,7 +38,7 @@ jobs:
     - name: Push new tag
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      if: ${{ steps.get_version.outputs.matching_tag }} == ""
+      if: ${{ steps.get_matching_tag.outputs.matching_tag }} == ""
       run: |
         APP_VERSION="${{ steps.get_version.outputs.version }}"
         git tag "v${APP_VERSION}"
