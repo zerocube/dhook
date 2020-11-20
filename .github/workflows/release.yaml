@@ -71,6 +71,14 @@ jobs:
         with:
           tag_name: v${{ needs.get_metadata.outputs.version_number }}
           files: build/dhook_*
+          body: |
+            Release: Version ${{ needs.get_metadata.outputs.version_number }}
+
+            ${{ github.event.head_commit.message }}
+
+            Docker Image: ghcr.io/${{ github.repository }}:${{ needs.get_metadata.outputs.version_number }}
+            Github Package alternative: docker.pkg.github.com/${{github.repository}}/dhook:${{ needs.get_metadata.outputs.version_number }}
+
   build_push_docker:
     name: Build & Push
     runs-on: ubuntu-latest
