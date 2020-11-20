@@ -116,7 +116,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: docker.pkg.github.com
-          repository: ${{github.repository}/dhook
+          repository: ${{github.repository}}/dhook
           tags: |
             latest
             ${{ github.GITHUB_SHA }}
