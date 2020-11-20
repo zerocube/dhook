@@ -74,7 +74,8 @@ jobs:
   build_push_docker:
     name: Builds and pushes the Docker image
     runs-on: ubuntu-latest
-    needs: []
+    needs:
+      - get_metadata
     steps:
     - uses: actions/checkout@v2
 
@@ -106,5 +107,5 @@ jobs:
       with:
         push: true
         tags: |
-          docker.pkg.github.com/${{github.repository}}:${{needs.determine_version.outputs.version_number}}
-          ghcr.io/${{github.repository}}:${{needs.determine_version.outputs.version_number}}
+          docker.pkg.github.com/${{github.repository}}:${{ needs.get_metadata.outputs.version_number }}
+          ghcr.io/${{github.repository}}:${{ needs.get_metadata.outputs.version_number }}
