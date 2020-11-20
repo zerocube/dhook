@@ -12,7 +12,7 @@ import (
 var webhookURL string
 
 const webhookURLEnvKey = "DHOOK_URL"
-const version = "0.1.4"
+const version = "0.1.5"
 
 var debug, verbose bool
 
