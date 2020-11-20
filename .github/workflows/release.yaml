@@ -33,15 +33,22 @@ jobs:
       version_number: ${{ steps.get.outputs.version }}
       matching_tag: ${{ steps.get.outputs.matching_tag }}
     steps:
-    - id: get
-      name: Get version from command line
-      run: |
-        APP_VERSION="$(go run . --version)"
-        echo ::set-output name=version::${APP_VERSION}
-        echo "APP_VERSION: ${APP_VERSION}"
-        MATCHING_TAG="$(git tag --list | grep "^v${APP_VERSION}$" || true)"
-        echo "MATCHING_TAG: ${MATCHING_TAG}"
-        echo ::set-output name=matching_tag::${MATCHING_TAG}
+      - name: Set up Go 1.x
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.15
+        id: go
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - id: get
+        name: Get version from command line
+        run: |
+          APP_VERSION="$(go run . --version)"
+          echo ::set-output name=version::${APP_VERSION}
+          echo "APP_VERSION: ${APP_VERSION}"
+          MATCHING_TAG="$(git tag --list | grep "^v${APP_VERSION}$" || true)"
+          echo "MATCHING_TAG: ${MATCHING_TAG}"
+          echo ::set-output name=matching_tag::${MATCHING_TAG}
   create_release:
     name: Create GitHub Release
     runs-on: ubuntu-latest
