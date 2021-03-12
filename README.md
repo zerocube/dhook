@@ -17,6 +17,7 @@
 |-embed-url||The URL for the embed title.|
 |-embed-title|-title|The title of the embed.|
 |-embed-description|-description|The description text in the embed object.|
+|-embed-colour|-colour|The colour of the embed [2].|
 |-embed-footer-text|-footer|The text of the footer in the embed object.|
 |-embed-footer-icon|-footer-icon|A link to the icon to be used in the footer of the embed object.|
 
@@ -25,3 +26,8 @@
   1. Command-line parameter
   1. Golang Package Variable: `main.webhookURL`
   1. Environment variable: `DHOOK_URL`
+
+[2] `-embed-colour`:
+  * Also has the following aliases: `-embed-color` and `-color`
+  * This is the decimal value, e.g. `-embed-colour 34047`
+  * A good tool to use is https://www.spycolor.com/.

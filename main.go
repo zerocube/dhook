@@ -37,6 +37,10 @@ func main() {
 	flag.StringVar(embedTitle, "title", *embedTitle, "alias for -embed-title")
 	embedDescription := flag.String("embed-description", "", "The embed description")
 	flag.StringVar(embedDescription, "description", *embedDescription, "alias for -embed-description")
+	embedColour := flag.Int("embed-colour", 0, "The embed colour")
+	flag.IntVar(embedColour, "colour", *embedColour, "alias for -embed-colour")
+	flag.IntVar(embedColour, "embed-color", *embedColour, "alias for -embed-colour")
+	flag.IntVar(embedColour, "color", *embedColour, "alias for -embed-colour")
 
 	// Flags for the embed footer struct - Footer (text), and Icon (URL)
 	embedFooterText := flag.String("embed-footer-text", "", "The embed footer text")
@@ -111,6 +115,7 @@ func main() {
 					Text:    *embedFooterText,
 					IconURL: *embedFooterIcon,
 				},
+				Color: *embedColour,
 			},
 		},
 	}
