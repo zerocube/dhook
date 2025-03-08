@@ -1,5 +1,4 @@
-FROM golang:1.15 as builder
-
+FROM golang:1.24 AS builder
 
 WORKDIR /go/src/github.com/zerocube/dhook
 
