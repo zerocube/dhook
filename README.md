@@ -10,7 +10,7 @@
 
 |Parameter|Alias(es)|Description|
 |---------|---------|-----------|
-|-message|-msg|Required: The message content to send.|
+|-message|-msg|The message content to send. Required if you do not set an embed option.|
 |-webhook-url|-url|Required [1]: The webhook URL to send the message to.|
 |-username|-user|The username to send the webhook as.|
 |-avatar-url|-avatar|URL of an image to use as the avatar.|

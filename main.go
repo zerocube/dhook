@@ -129,6 +129,10 @@ func main() {
 		webhookPayload.Embeds = nil
 	}
 
+	if *message == "" && webhookPayload.Embeds == nil {
+		log.Fatalln("Error: Please provide a message (-message) or embed content (for example -title).")
+	}
+
 	sendJSONPayload(
 		coalescedWebhookURL,
 		webhookPayload,
