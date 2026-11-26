@@ -40,7 +40,7 @@
 
 ## Docker
 
-The release workflow publishes an image to `ghcr.io/zerocube/dhook`, with the tags `latest` and the version number (for example `0.2.0`). The image runs `dhook`, so give the options after the image name:
+The release workflow publishes an image to `ghcr.io/zerocube/dhook`, with the tags `latest`, the version number (for example `0.2.0`) and the commit SHA. The image runs `dhook`, so give the options after the image name:
 
 ```bash
 docker run --rm -e DHOOK_URL="https://discord.com/api/webhooks/..." ghcr.io/zerocube/dhook:latest -msg "Hello"
@@ -51,4 +51,3 @@ To build an image that contains a webhook URL, set the `WEBHOOK_URL` build argum
 ```bash
 docker build --build-arg WEBHOOK_URL="https://discord.com/api/webhooks/..." -t dhook .
 ```
-
