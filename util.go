@@ -7,7 +7,11 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"time"
 )
+
+// httpClient has a timeout, so dhook does not wait forever for a slow server.
+var httpClient = &http.Client{Timeout: 30 * time.Second}
 
 func sendJSONPayload(url *string, object interface{}) error {
 
@@ -26,7 +30,7 @@ func sendJSONPayload(url *string, object interface{}) error {
 
 	req.Header.Add("Content-Type", "application/json")
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		log.Fatalln("Unable to send request:", errors.Unwrap(err))
 	}
