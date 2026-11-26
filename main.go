@@ -27,7 +27,7 @@ func main() {
 	avatarURL := flag.String("avatar-url", "", "The URL of the avatar to use")
 	flag.StringVar(avatarURL, "avatar", *avatarURL, "alias for -avatar-url")
 
-	webhookURLFlag := flag.String("webhook-url", webhookURL, "The webhook URL to send the message to")
+	webhookURLFlag := flag.String("webhook-url", "", "The webhook URL to send the message to")
 	flag.StringVar(webhookURLFlag, "url", *webhookURLFlag, "alias for -webhook-url")
 
 	// Flags for the main embed struct - URL, Title, and Description
@@ -68,7 +68,7 @@ func main() {
 		}
 	} else {
 		if debug {
-			log.Println("webhookURL set via package variable:", webhookURL)
+			log.Println("webhookURL set via package variable")
 		}
 	}
 
