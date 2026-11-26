@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -27,7 +28,7 @@ func sendJSONPayload(url *string, object interface{}) error {
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		log.Fatalln("Unable to send request:", err)
+		log.Fatalln("Unable to send request:", errors.Unwrap(err))
 	}
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		log.Println("WARNING: Request received a", resp.StatusCode, " status code from the server.")
