@@ -2,13 +2,11 @@
 
 set -eu
 
-GOOS="${GOOS:-linux}"
-GOARCH="${GOARCH:-amd64}"
-
 SCRIPT_NAME="dhook"
 
 function buildCommand() {
-  OUTPUT_PATH="build/${SCRIPT_NAME}_${GOOS}_${GOARCH}"
+  # GOEXE is ".exe" when GOOS is windows, and empty for other systems.
+  OUTPUT_PATH="build/${SCRIPT_NAME}_${GOOS}_${GOARCH}$(go env GOEXE)"
   echo "Building: ${OUTPUT_PATH}"
   go build -v -o "${OUTPUT_PATH}" "${@}"
 }
@@ -24,6 +22,7 @@ GOOS=linux    GOARCH=amd64  buildCommand "${@}"
 GOOS=linux    GOARCH=arm64  buildCommand "${@}"
 GOOS=linux    GOARCH=mips64 buildCommand "${@}"
 GOOS=darwin   GOARCH=amd64  buildCommand "${@}"
+GOOS=darwin   GOARCH=arm64  buildCommand "${@}"
 GOOS=windows  GOARCH=amd64  buildCommand "${@}"
 
 chmod 755 build/${SCRIPT_NAME}*
