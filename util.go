@@ -26,6 +26,9 @@ func sendJSONPayload(url *string, object interface{}) error {
 	req.Header.Add("Content-Type", "application/json")
 
 	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Fatalln("Unable to send request:", err)
+	}
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		log.Println("WARNING: Request received a", resp.StatusCode, " status code from the server.")
 		body, err := ioutil.ReadAll(resp.Body)
