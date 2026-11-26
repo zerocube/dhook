@@ -5,6 +5,9 @@ on:
     branches-ignore:
       - "main"
 
+permissions:
+  contents: read
+
 jobs:
   build_go:
     name: Test Build
@@ -13,11 +16,23 @@ jobs:
       - name: Set up Go 1.x
         uses: actions/setup-go@v7
         with:
-          go-version: ^1.15
+          go-version: stable
         id: go
 
       - name: Check out code into the Go module directory
         uses: actions/checkout@v7
+
+      - name: Check formatting
+        run: |
+          UNFORMATTED="$(gofmt -l .)"
+          if [ -n "${UNFORMATTED}" ]; then
+            echo "These files are not formatted with gofmt:"
+            echo "${UNFORMATTED}"
+            exit 1
+          fi
+
+      - name: Vet
+        run: go vet ./...
 
       - name: Build
         run: auto/build
