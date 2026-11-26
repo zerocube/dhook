@@ -22,14 +22,7 @@ func sendJSONPayload(url *string, object interface{}) {
 		log.Fatalln("Unable to convert object to JSON:", err)
 	}
 
-	req, err := http.NewRequest(http.MethodPost, *url, bytes.NewReader(objectJSON))
-	if err != nil {
-		log.Fatalln("Unable to create request:", errors.Unwrap(err))
-	}
-
-	req.Header.Add("Content-Type", "application/json")
-
-	resp, err := httpClient.Do(req)
+	resp, err := httpClient.Post(*url, "application/json", bytes.NewReader(objectJSON))
 	if err != nil {
 		log.Fatalln("Unable to send request:", errors.Unwrap(err))
 	}
