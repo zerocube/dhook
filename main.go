@@ -102,6 +102,15 @@ func main() {
 		log.Fatalln("Error: Unable to determine webhook URL.")
 	}
 
+	// Only send a footer when a footer option is set, not an empty footer object.
+	var embedFooter *discordgo.MessageEmbedFooter
+	if *embedFooterText != "" || *embedFooterIcon != "" {
+		embedFooter = &discordgo.MessageEmbedFooter{
+			Text:    *embedFooterText,
+			IconURL: *embedFooterIcon,
+		}
+	}
+
 	webhookPayload := discordgo.WebhookParams{
 		Content:   *message,
 		Username:  *username,
@@ -111,11 +120,8 @@ func main() {
 				URL:         *embedURL,
 				Title:       *embedTitle,
 				Description: *embedDescription,
-				Footer: &discordgo.MessageEmbedFooter{
-					Text:    *embedFooterText,
-					IconURL: *embedFooterIcon,
-				},
-				Color: *embedColour,
+				Footer:      embedFooter,
+				Color:       *embedColour,
 			},
 		},
 	}

@@ -19,7 +19,7 @@
 |-embed-description|-description|The description text in the embed object.|
 |-embed-colour|-colour|The colour of the embed [2].|
 |-embed-footer-text|-footer|The text of the footer in the embed object.|
-|-embed-footer-icon|-footer-icon|A link to the icon to be used in the footer of the embed object.|
+|-embed-footer-icon|-footer-icon|A link to the icon to be used in the footer of the embed object. Discord requires `-embed-footer-text` when you set this.|
 
 [1] `-webhook-url` may be set in one of the following ways - List below is in order of preference:
 
