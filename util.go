@@ -31,12 +31,11 @@ func sendJSONPayload(url *string, object interface{}) error {
 		log.Fatalln("Unable to send request:", errors.Unwrap(err))
 	}
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		log.Println("WARNING: Request received a", resp.StatusCode, " status code from the server.")
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			log.Println("Unable to read response body:", err)
 		}
-		log.Println(string(body))
+		log.Fatalln("Error: Request received a", resp.StatusCode, "status code from the server:", string(body))
 	}
 	return err
 }
