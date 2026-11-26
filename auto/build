@@ -5,10 +5,8 @@ set -eu
 SCRIPT_NAME="dhook"
 
 function buildCommand() {
-  OUTPUT_PATH="build/${SCRIPT_NAME}_${GOOS}_${GOARCH}"
-  if [ "${GOOS}" = "windows" ]; then
-    OUTPUT_PATH="${OUTPUT_PATH}.exe"
-  fi
+  # GOEXE is ".exe" when GOOS is windows, and empty for other systems.
+  OUTPUT_PATH="build/${SCRIPT_NAME}_${GOOS}_${GOARCH}$(go env GOEXE)"
   echo "Building: ${OUTPUT_PATH}"
   go build -v -o "${OUTPUT_PATH}" "${@}"
 }
