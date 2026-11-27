@@ -36,7 +36,7 @@
 
 ### Exit status
 
-`dhook` exits with status 0 when the server accepts the message. It exits with a non-zero status when it cannot send the message, for example when the webhook URL is missing, the request fails, or the server returns an error.
+`dhook` exits with status 0 when the server accepts the message. It exits with a non-zero status when it cannot send the message, for example when the webhook URL is missing, the request fails, or the server returns an error. `-version` and `-help` also exit with status 0, and do not send a message.
 
 ## Docker
 
