@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -12,9 +13,9 @@ import (
 var webhookURL string
 
 const webhookURLEnvKey = "DHOOK_URL"
-const version = "0.2.0"
 
-var debug, verbose bool
+// Change this for a release. The -X linker flag cannot change a const.
+const version = "0.2.0"
 
 func main() {
 	// Flags for the main payload - Message and username
@@ -50,55 +51,38 @@ func main() {
 	flag.StringVar(embedFooterIcon, "footer-icon", *embedFooterIcon, "alias for -embed-footer-icon")
 
 	showVersion := flag.Bool("version", false, "Shows version information and exits")
-	debugFlag := flag.Bool("debug", false, "Enables debug logging")
-	verboseFlag := flag.Bool("verbose", false, "Enables verbose logging")
+	debug := flag.Bool("debug", false, "Enables debug logging")
+	flag.Bool("verbose", false, "Has no effect (kept for compatibility)")
 
 	// Work the flag magic
 	flag.Parse()
-
-	debug, verbose = *debugFlag, *verboseFlag
-
-	if webhookURL == "" {
-		if debug {
-			log.Println("webhookURL package variable empty")
-		}
-		webhookURL = os.Getenv(webhookURLEnvKey)
-		if debug && webhookURL == "" {
-			log.Println(webhookURLEnvKey, "environment variable not set.")
-		}
-	} else {
-		if debug {
-			log.Println("webhookURL set via package variable")
-		}
-	}
 
 	if *showVersion {
 		fmt.Println(version)
 		os.Exit(0)
 	}
 
-	// The command-line parameter for the webhook URL takes precedence over the package / environment variable
-	// First check if it's provided in some form.
-	if webhookURL == "" && *webhookURLFlag == "" {
-		println("Please provide a webhook URL to send the message to using one of the options below.")
-		println("  Environment variable:", webhookURLEnvKey)
-		println("  Command Line parameter: -webhook-url or -url")
+	// Precedence: the command-line flag, then the package variable (set at
+	// build time), then the environment variable.
+	url, source := *webhookURLFlag, "command-line flag"
+	if url == "" {
+		url, source = webhookURL, "built-in package variable (set with -ldflags)"
+	}
+	if url == "" {
+		url, source = os.Getenv(webhookURLEnvKey), webhookURLEnvKey+" environment variable"
+	}
+	if url == "" {
+		fmt.Fprintln(os.Stderr, "Please provide a webhook URL to send the message to using one of the options below.")
+		fmt.Fprintln(os.Stderr, "  Environment variable:", webhookURLEnvKey)
+		fmt.Fprintln(os.Stderr, "  Command Line parameter: -webhook-url or -url")
+		fmt.Fprintln(os.Stderr, "  Build time: -ldflags \"-X main.webhookURL=...\"")
 		os.Exit(1)
 	}
-
-	var coalescedWebhookURL *string
-	if *webhookURLFlag != "" {
-		coalescedWebhookURL = webhookURLFlag
-	} else {
-		coalescedWebhookURL = &webhookURL
+	if *debug {
+		log.Println("Using the webhook URL from the", source)
 	}
 
-	// If it's still empty at this point, something is horribly wrong.
-	if *coalescedWebhookURL == "" {
-		log.Fatalln("Error: Unable to determine webhook URL.")
-	}
-
-	// Only send a footer when a footer option is set, not an empty footer object.
+	// Leave the footer out unless a footer option is set, so we never send "footer":{}.
 	var embedFooter *discordgo.MessageEmbedFooter
 	if *embedFooterText != "" || *embedFooterIcon != "" {
 		embedFooter = &discordgo.MessageEmbedFooter{
@@ -131,12 +115,9 @@ func main() {
 		webhookPayload.Embeds = nil
 	}
 
-	if *message == "" && webhookPayload.Embeds == nil {
-		log.Fatalln("Error: Please provide a message (-message) or embed content (for example -title).")
+	if strings.TrimSpace(*message) == "" && webhookPayload.Embeds == nil {
+		log.Fatalln("Error: Please provide a message (-message) or embed content (for example -title, -description or -footer).")
 	}
 
-	sendJSONPayload(
-		coalescedWebhookURL,
-		webhookPayload,
-	)
+	sendJSONPayload(&url, webhookPayload)
 }
