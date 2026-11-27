@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -12,6 +13,8 @@ import (
 var webhookURL string
 
 const webhookURLEnvKey = "DHOOK_URL"
+
+// Change this for a release. The -X linker flag cannot change a const.
 const version = "0.2.0"
 
 func main() {
@@ -63,7 +66,7 @@ func main() {
 	// build time), then the environment variable.
 	url, source := *webhookURLFlag, "command-line flag"
 	if url == "" {
-		url, source = webhookURL, "package variable"
+		url, source = webhookURL, "built-in package variable (set with -ldflags)"
 	}
 	if url == "" {
 		url, source = os.Getenv(webhookURLEnvKey), webhookURLEnvKey+" environment variable"
@@ -72,13 +75,14 @@ func main() {
 		fmt.Fprintln(os.Stderr, "Please provide a webhook URL to send the message to using one of the options below.")
 		fmt.Fprintln(os.Stderr, "  Environment variable:", webhookURLEnvKey)
 		fmt.Fprintln(os.Stderr, "  Command Line parameter: -webhook-url or -url")
+		fmt.Fprintln(os.Stderr, "  Build time: -ldflags \"-X main.webhookURL=...\"")
 		os.Exit(1)
 	}
 	if *debug {
 		log.Println("Using the webhook URL from the", source)
 	}
 
-	// Only send a footer when a footer option is set, not an empty footer object.
+	// Leave the footer out unless a footer option is set, so we never send "footer":{}.
 	var embedFooter *discordgo.MessageEmbedFooter
 	if *embedFooterText != "" || *embedFooterIcon != "" {
 		embedFooter = &discordgo.MessageEmbedFooter{
@@ -111,8 +115,8 @@ func main() {
 		webhookPayload.Embeds = nil
 	}
 
-	if *message == "" && webhookPayload.Embeds == nil {
-		log.Fatalln("Error: Please provide a message (-message) or embed content (for example -title).")
+	if strings.TrimSpace(*message) == "" && webhookPayload.Embeds == nil {
+		log.Fatalln("Error: Please provide a message (-message) or embed content (for example -title, -description or -footer).")
 	}
 
 	sendJSONPayload(&url, webhookPayload)
