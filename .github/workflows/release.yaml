@@ -14,13 +14,12 @@ jobs:
       - get_metadata
     if: needs.get_metadata.outputs.matching_tag == ''
     steps:
-      - name: Set up Go 1.x
-        uses: actions/setup-go@v7
-        with:
-          go-version: stable
-        id: go
       - name: Checkout code
         uses: actions/checkout@v7
+      - name: Set up Go
+        uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
       - name: Build project
         run: auto/build
       - name: Upload build artefacts
@@ -35,13 +34,12 @@ jobs:
       version_number: ${{ steps.get.outputs.version }}
       matching_tag: ${{ steps.get.outputs.matching_tag }}
     steps:
-      - name: Set up Go 1.x
-        uses: actions/setup-go@v7
-        with:
-          go-version: stable
-        id: go
       - name: Checkout code
         uses: actions/checkout@v7
+      - name: Set up Go
+        uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
       - id: get
         name: Get version from command line
         run: |
