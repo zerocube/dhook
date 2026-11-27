@@ -16,12 +16,15 @@ func TestAllStringsAreEmpty(t *testing.T) {
 	}{
 		{"no strings", nil, true},
 		{"all empty", []*string{&empty, &empty}, true},
-		{"one set", []*string{&empty, &set}, false},
+		{"last set", []*string{&empty, &set}, false},
+		{"first set", []*string{&set, &empty}, false},
 	}
 	for _, tt := range tests {
-		if got := allStringsAreEmpty(tt.in); got != tt.want {
-			t.Errorf("%s: allStringsAreEmpty() = %v, want %v", tt.name, got, tt.want)
-		}
+		t.Run(tt.name, func(t *testing.T) {
+			if got := allStringsAreEmpty(tt.in); got != tt.want {
+				t.Errorf("allStringsAreEmpty() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }
 
